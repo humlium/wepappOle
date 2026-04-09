@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PM2.5 Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🌫 PM2.5 Air Quality Dashboard</h1>
+    <div id="last-updated">กำลังโหลด...</div>
+  </header>
+
+  <main>
+    <section id="cards-section">
+      <div id="cards-grid"></div>
+      <div id="no-data" class="hidden">ยังไม่มีข้อมูล — รอ sensor ส่งข้อมูลมา</div>
+    </section>
+
+    <section id="map-section">
+      <h2>แผนที่ตำแหน่ง Sensor</h2>
+      <div id="map"></div>
+    </section>
+
+    <section id="chart-section">
+      <h2>กราฟย้อนหลัง 24 ชั่วโมง</h2>
+      <div id="location-tabs"></div>
+      <div class="chart-container">
+        <canvas id="pm25-chart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

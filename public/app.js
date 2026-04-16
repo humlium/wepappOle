@@ -41,6 +41,7 @@ function renderCards(data) {
   }
   noData.classList.add('hidden');
   locations = data.map(d => d.location);
+  updateExportLocations();
 
   grid.innerHTML = data.map(row => {
     const aqi = getAqi(row.pm25);
@@ -250,6 +251,39 @@ async function fetchLatest() {
   }
 }
 
+// ---- EXPORT ----
+function initExportDates() {
+  const today = new Date();
+  const sevenDaysAgo = new Date(today);
+  sevenDaysAgo.setDate(today.getDate() - 7);
+
+  const fmt = d => d.toISOString().slice(0, 10);
+  document.getElementById('export-start').value = fmt(sevenDaysAgo);
+  document.getElementById('export-end').value   = fmt(today);
+}
+
+function updateExportLocations() {
+  const sel = document.getElementById('export-location');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">ทุก Station</option>' +
+    locations.map(loc => `<option value="${loc}">${loc}</option>`).join('');
+  if (prev && locations.includes(prev)) sel.value = prev;
+}
+
+function exportCSV() {
+  const location = document.getElementById('export-location').value;
+  const start    = document.getElementById('export-start').value;
+  const end      = document.getElementById('export-end').value;
+
+  if (!start || !end) { alert('กรุณาเลือกช่วงวันที่'); return; }
+  if (start > end) { alert('วันที่เริ่มต้นต้องไม่เกินวันที่สิ้นสุด'); return; }
+
+  let url = `/api/export?start=${start}&end=${end}`;
+  if (location) url += `&location=${encodeURIComponent(location)}`;
+  window.location.href = url;
+}
+
 initMap();
+initExportDates();
 fetchLatest();
 setInterval(fetchLatest, 10000);

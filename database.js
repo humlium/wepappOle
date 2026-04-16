@@ -48,4 +48,10 @@ const getHistory = db.prepare(`
   ORDER BY timestamp ASC
 `);
 
-module.exports = { insertReading, getLatest, getHistory };
+const getAllReadings = db.prepare(`
+  SELECT device_name, location, pm25, temperature, humidity, battery, latitude, longitude, timestamp
+  FROM readings
+  ORDER BY timestamp ASC
+`);
+
+module.exports = { insertReading, getLatest, getHistory, getAllReadings };

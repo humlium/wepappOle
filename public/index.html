@@ -33,6 +33,27 @@
         <canvas id="pm25-chart"></canvas>
       </div>
     </section>
+
+    <section id="export-section">
+      <h2>Export ข้อมูล CSV</h2>
+      <div class="export-controls">
+        <div class="export-field">
+          <label for="export-location">Station</label>
+          <select id="export-location">
+            <option value="">ทุก Station</option>
+          </select>
+        </div>
+        <div class="export-field">
+          <label for="export-start">ตั้งแต่วันที่</label>
+          <input type="date" id="export-start">
+        </div>
+        <div class="export-field">
+          <label for="export-end">ถึงวันที่</label>
+          <input type="date" id="export-end">
+        </div>
+        <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+    </section>
   </main>
 
   <script src="app.js"></script>

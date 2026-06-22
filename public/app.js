@@ -22,11 +22,38 @@ function getBatteryClass(pct) {
   return 'battery-low';
 }
 
+function parseTimestamp(ts) {
+  if (!ts) return null;
+  // ISO: 2026-04-14 23:18:56
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(ts)) {
+    return new Date(ts.replace(' ', 'T'));
+  }
+  // Thai Buddhist Era: 15/4/2569 00:02:47
+  const thai = ts.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}) (\d{2}:\d{2}:\d{2})$/);
+  if (thai && parseInt(thai[3]) >= 2500) {
+    const ceYear = parseInt(thai[3]) - 543;
+    return new Date(`${ceYear}-${thai[2].padStart(2,'0')}-${thai[1].padStart(2,'0')}T${thai[4]}`);
+  }
+  // US locale: 4/15/2026, 7:35:32 AM
+  const us = ts.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s+(\d{1,2}):(\d{2}):(\d{2})\s*(AM|PM)?$/i);
+  if (us) {
+    let h = parseInt(us[4]);
+    const ampm = us[7] ? us[7].toUpperCase() : null;
+    if (ampm === 'PM' && h < 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    return new Date(parseInt(us[3]), parseInt(us[1]) - 1, parseInt(us[2]), h, parseInt(us[5]), parseInt(us[6]));
+  }
+  return new Date(ts);
+}
+
 function formatDateTime(ts) {
-  if (!ts) return '';
-  const parts = ts.split(' ');
-  if (parts.length === 2) return { date: parts[0], time: parts[1] };
-  return { date: ts, time: '' };
+  if (!ts) return { date: '', time: '' };
+  const d = parseTimestamp(ts);
+  if (!d || isNaN(d.getTime())) return { date: ts, time: '' };
+  const pad = n => String(n).padStart(2, '0');
+  const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  return { date, time };
 }
 
 // ---- CARDS ----
@@ -71,6 +98,10 @@ function renderCards(data) {
       ? `<div class="metric"><span>🕐</span><span>${dt.time}</span></div>`
       : '';
 
+    const gpsHtml = row.latitude != null && row.longitude != null
+      ? `<div class="metric"><span>🗺</span><span><a class="gps-link" href="https://maps.google.com/?q=${row.latitude},${row.longitude}" target="_blank">${row.latitude.toFixed(5)}, ${row.longitude.toFixed(5)}</a></span></div>`
+      : '';
+
     return `
       <div class="card">
         <div class="card-header">
@@ -85,6 +116,7 @@ function renderCards(data) {
         <div class="card-metrics">
           ${tempHtml}
           ${humHtml}
+          ${gpsHtml}
           ${dateHtml}
           ${timeHtml}
         </div>

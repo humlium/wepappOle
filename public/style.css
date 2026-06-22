@@ -160,6 +160,17 @@ main {
   margin-bottom: 10px;
 }
 
+.gps-link {
+  color: #a78bfa;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+.gps-link:hover {
+  text-decoration: underline;
+  color: #c4b5fd;
+}
+
 /* Map */
 #map-section {
   margin-bottom: 40px;
